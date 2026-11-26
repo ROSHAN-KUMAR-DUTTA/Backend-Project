@@ -45,13 +45,19 @@ const userSchema=Schema({
         },
     ]
 },{
-    timestamps:true
+    timestamps:true 
 })
 
-userSchema.pre('save',async function (next){
-    if(!this.isModefied('password')) return next()
+
+//next was used in older times today we don't need to use next call back also next is not used with async and await in mongoose 9 that the reason next is not a function error was kept comming
+// userSchema.pre('save',async function (next){
+//     if(!this.isModified('password'))  return next()
+//     this.password=await bcrypt.hash(this.password,10)
+//     next()
+// })
+userSchema.pre('save',async function (){
+    if(!this.isModified('password'))  return
     this.password=await bcrypt.hash(this.password,10)
-    next()
 })
 
 userSchema.methods.isPasswordCorrect=async function (password){
