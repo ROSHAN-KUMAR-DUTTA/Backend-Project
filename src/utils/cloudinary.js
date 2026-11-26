@@ -12,7 +12,7 @@ cloudinary.config({
 const cloudinaryUploader = async (localFilePath) => {
     try {
         if (!localFilePath) {
-            console.error('File path is empty!!');
+            console.log('File path is empty!!');
             return null;
         }
         const fileUpload = await cloudinary.uploader.upload(localFilePath, {

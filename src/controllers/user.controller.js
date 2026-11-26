@@ -21,7 +21,9 @@ const registerUser = asyncHandler(async (req, res) => {
     */
 
 //    console.log(req.body)
-   const { username, email, fullName, password } = req.body;
+// console.log(req.files)
+// console.log(req.body)
+const { username, email, fullName, password } = req.body;
     // console.log(email)
     if (
         [username, email, fullName, password].some(
@@ -42,17 +44,20 @@ const registerUser = asyncHandler(async (req, res) => {
     if(isUserExist){
         throw new ApiError(409,'User is already registered')
     }
-    // console.log(req.files)
     const avatarLocalFilePath=req.files?.avatar[0].path
-    let coverImageLocalFilePath=req.files?.coverImage[0].path
+    // let coverImageLocalFilePath=req.files?.coverImage[0].path  //this will cause error if coverImage is not given
     if(!avatarLocalFilePath){
         throw new ApiError(400,'Avatar image is required')
     }
     const avatar=await cloudinaryUploader(avatarLocalFilePath)
-    const coverImage=await cloudinaryUploader(coverImageLocalFilePath)
     if(!avatar){
         throw new ApiError(400,'Avatar image is required')
     }
+    let coverImageLocalFilePath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage[0].length){
+        coverImageLocalFilePath=req.files.coverImage[0].path
+    }
+    const coverImage=await cloudinaryUploader(coverImageLocalFilePath)
     const user=await User.create({
         username:username.toLowerCase(),
         email:email.toLowerCase(),
