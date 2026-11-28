@@ -8,6 +8,9 @@ import {
     changeUserAccountDetails,
     changeUserProfileAvatar,
     changeUserProfileCoverImage,
+    getWatchHistory,
+    getUserDetails,
+    getUserChannelProfile,
 } from '../controllers/user.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyJwt } from '../middlewares/auth.middleware.js';
@@ -33,29 +36,15 @@ router.route('/refresh-token').post(refreshAccessToken);
 router.route('/update-password').post(verifyJwt, changeAndUpdatePassword);
 router
     .route('/change-account-details')
-    .post(verifyJwt, changeUserAccountDetails);
+    .patch(verifyJwt, changeUserAccountDetails);
 router
-    .route('/change-account-details')
-    .post(verifyJwt, changeUserAccountDetails);
-router.route('/change-profile-image').post(
-    upload.fields([
-        {
-            name: 'avatar',
-            maxCount: 1,
-        },
-    ]),
-    verifyJwt,
-    changeUserProfileAvatar
-);
-router.route('/change-cover-image').post(
-    upload.fields([
-        {
-            name: 'coverImage',
-            maxCount: 1,
-        },
-    ]),
-    verifyJwt,
-    changeUserProfileCoverImage
-);
+    .route('/change-profile-image')
+    .patch(verifyJwt, upload.single('avatar'), changeUserProfileAvatar);
+router
+    .route('/change-cover-image')
+    .patch(verifyJwt, upload.single('coverImage'), changeUserProfileCoverImage);
+router.route('/profile').get(verifyJwt, getUserDetails);
+router.route('/channel/:username').get(verifyJwt, getUserChannelProfile);
+router.route('/history').get(verifyJwt, getWatchHistory);
 
 export default router;
